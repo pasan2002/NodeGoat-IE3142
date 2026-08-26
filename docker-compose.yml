@@ -7,14 +7,13 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
       MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
-    ports:
-      - "27017:27017"
+
     volumes:
       - mongo-data:/data/db
     networks:
       - nodegoat-network
     healthcheck:
-      test: echo 'db.stats().ok' | mongo localhost:27017/test --quiet
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -37,8 +36,7 @@ services:
         condition: service_healthy
     networks:
       - nodegoat-network
-    command: >
-      sh -c "npm run db:seed && npm start"
+    command: npm start
 
 volumes:
   mongo-data:
